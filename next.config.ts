@@ -1,11 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",        // ⭐ IMPORTANT: enable static export
   reactStrictMode: true,
 
+  output: "standalone",  // ⭐ REQUIRED for Render Next.js
+
   images: {
-    unoptimized: true,     // ⭐ Required for static hosting (otherwise build breaks)
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "finance-app-i0ff.onrender.com",
+        pathname: "/uploads/**",
+      },
+    ],
   },
 };
 
