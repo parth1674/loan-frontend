@@ -563,6 +563,7 @@ export default function Home() {
                   type="email"
                   required
                   value={email}
+                  suppressHydrationWarning={true}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm text-slate-900 bg-white border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Your email"

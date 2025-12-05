@@ -7,14 +7,13 @@ import Step2Personal from "./step2Personal";
 import Step3Kyc from "./step3Kyc";
 import Step4Bank from "./step4Bank";
 import Step5Review from "./step5Review";
-import { registerUser } from "@/api/auth";
+
 export default function RegisterPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<any>({
-    // Step 1
     firstName: "",
     lastName: "",
     email: "",
@@ -22,7 +21,6 @@ export default function RegisterPage() {
     contact: "",
     altContact: "",
 
-    // Step 2
     fatherName: "",
     dob: "",
     profession: "",
@@ -30,14 +28,12 @@ export default function RegisterPage() {
     communicationAddress: "",
     permanentAddress: "",
 
-    // Step 3
     aadhaarNumber: "",
     panNumber: "",
     aadhaarUrl: "",
     panUrl: "",
     photoUrl: "",
 
-    // Step 4
     accountHolderName: "",
     accountNumber: "",
     ifsc: "",
@@ -49,93 +45,82 @@ export default function RegisterPage() {
   });
 
   function updateField(key: string, value: any) {
-    setForm((prev: any) => ({ ...prev, [key]: value }));
+    setForm((p: any) => ({ ...p, [key]: value }));
   }
 
   async function finalSubmit() {
     try {
       setLoading(true);
-
       const fd = new FormData();
 
-      // BASIC DETAILS
-      fd.append("firstName", form.firstName);
-      fd.append("lastName", form.lastName || "");
-      fd.append("email", form.email);
-      fd.append("password", form.password);
-      fd.append("contact", form.contact);
-      fd.append("countryDialCode", form.countryDialCode.toString());
-      fd.append("altContact", form.altContact || "");
-
-      // PERSONAL DETAILS
-      fd.append("fatherName", form.fatherName);
-      fd.append("dob", form.dob);
-      fd.append("profession", form.profession);
-      fd.append("annualIncome", form.annualIncome);
-      fd.append("communicationAddress", form.communicationAddress);
-      fd.append("permanentAddress", form.permanentAddress);
-
-      // KYC DETAILS
-      fd.append("aadhaarNumber", form.aadhaarNumber);
-      fd.append("panNumber", form.panNumber);
-
-      if (form.aadhaarUrl_file) fd.append("aadhaar", form.aadhaarUrl_file);
-      if (form.panUrl_file) fd.append("pan", form.panUrl_file);
-      if (form.photoUrl_file) fd.append("photo", form.photoUrl_file);
-
-      // BANK DETAILS
-      fd.append("accountHolderName", form.accountHolderName);
-      fd.append("accountNumber", form.accountNumber);
-      fd.append("ifsc", form.ifsc);
-      fd.append("bankName", form.bankName);
-      fd.append("branch", form.branch);
-      fd.append("city", form.city);
-      fd.append("state", form.state);
-
-      if (form.chequeFile) fd.append("cheque", form.chequeFile);
-
-      // HIT API
-      const res = await fetch("https://finance-app-i0ff.onrender.com/auth/register-complete", {
-        method: "POST",
-        body: fd,
+      Object.entries(form).forEach(([k, v]: any) => {
+        if (v) fd.append(k, v);
       });
 
-      const data = await res.json();
+      const res = await fetch(
+        "https://finance-app-i0ff.onrender.com/auth/register-complete",
+        {
+          method: "POST",
+          body: fd,
+        }
+      );
 
+      const data = await res.json();
       if (!res.ok) {
-        alert(data.message || "Something went wrong");
+        alert(data.message || "Failed");
         return;
       }
 
       router.push("/auth/registration-success");
-    } catch (err) {
-      console.log(err);
+    } catch (e) {
       alert("Registration failed");
     } finally {
       setLoading(false);
     }
   }
 
-
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center p-6">
-      <div className="bg-white shadow-xl rounded-xl w-full max-w-2xl p-6">
+    <div className="min-h-screen bg-[#0A0F1D] flex items-center justify-center p-4 relative overflow-hidden">
 
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Register Account
+      {/* BEAUTIFUL BG LIGHTS */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600/30 blur-[140px] rounded-full"></div>
+      <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-600/30 blur-[140px] rounded-full"></div>
+
+      {/* CARD */}
+      <div className="relative w-full max-w-2xl bg-white/10 backdrop-blur-2xl border border-white/20 
+        rounded-3xl shadow-2xl p-8 animate-fadeIn">
+
+        {/* TITLE */}
+        <h1 className="text-4xl font-extrabold text-center mb-8 
+          bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent tracking-wide">
+          Create Your Account
         </h1>
 
-        {/* STEP VIEW */}
-        {step === 1 && <Step1Basic form={form} update={updateField} next={() => setStep(2)} />}
-        {step === 2 && <Step2Personal form={form} update={updateField} next={() => setStep(3)} prev={() => setStep(1)} />}
-        {step === 3 && <Step3Kyc form={form} update={updateField} next={() => setStep(4)} back={() => setStep(2)} />}
-        {step === 4 && <Step4Bank form={form} update={updateField} next={() => setStep(5)} back={() => setStep(3)} />}
-        {step === 5 && <Step5Review form={form} back={() => setStep(4)} next={() => setStep(4)} finalSubmit={finalSubmit} />}
-
-        {/* Step Indicator */}
-        <div className="mt-6 text-center text-gray-500">
-          Step {step} / 5
+        {/* STEP CONTAINER */}
+        <div className="transition-all duration-300 ease-in-out text-gray-200 
+                [&_input]:text-black [&_input::placeholder]:text-gray-400">
+          {step === 1 && <Step1Basic form={form} update={updateField} next={() => setStep(2)} />}
+          {step === 2 && <Step2Personal form={form} update={updateField} next={() => setStep(3)} prev={() => setStep(1)} />}
+          {step === 3 && <Step3Kyc form={form} update={updateField} next={() => setStep(4)} back={() => setStep(2)} />}
+          {step === 4 && <Step4Bank form={form} update={updateField} next={() => setStep(5)} back={() => setStep(3)} />}
+          {step === 5 && <Step5Review form={form} back={() => setStep(4)} next={() => setStep(4)} finalSubmit={finalSubmit} />}
         </div>
+
+        {/* PROGRESS BAR */}
+        <div className="mt-10">
+          <div className="flex justify-between text-white/60 text-xs font-medium mb-1 px-1">
+            <span>Step {step}</span>
+            <span>5 Steps</span>
+          </div>
+
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+              style={{ width: `${(step / 5) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
