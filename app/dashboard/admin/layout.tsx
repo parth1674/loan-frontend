@@ -59,6 +59,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             💳 Loans
           </a>
+
+          <a
+            href="/dashboard/admin/newsletter"
+            className="block p-2 rounded hover:bg-gray-800"
+          >
+            Newsletter
+          </a>
+
         </nav>
 
         <div className="border-t border-gray-800 p-4 flex items-center gap-3">
@@ -75,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           className="bg-red-600 hover:bg-red-700 p-3 m-4 rounded text-sm"
           onClick={() => {
             localStorage.clear();
-            router.push("/login");
+            router.push("/");
           }}
         >
           Logout

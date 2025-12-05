@@ -26,8 +26,8 @@ export default function Home() {
     (amount * interestRate) / (1 - Math.pow(1 + interestRate, -months))
   );
 
-  // ----------------- Subscribe handler -----------------
-  async function handleSubscribe() {
+  async function handleSubscribe(e?: any) {
+    if (e) e.preventDefault();
     setSubmitting(true);
     setSubMsg("");
 
@@ -48,13 +48,14 @@ export default function Home() {
       }
 
       setSubMsg("Subscribed successfully!");
-      setEmail(""); // clear input
+      setEmail("");
     } catch (err) {
       setSubMsg("Subscription failed");
     } finally {
       setSubmitting(false);
     }
   }
+
 
 
   return (
@@ -567,7 +568,7 @@ export default function Home() {
                   placeholder="Your email"
                 />
                 <button
-                  onClick={handleSubscribe}
+                  type="submit"
                   disabled={submitting}
                   className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-semibold hover:bg-blue-700 disabled:bg-blue-400"
                 >
