@@ -53,6 +53,8 @@ export default function LoginPage() {
           <Mail className="absolute left-3 top-3.5 text-slate-300" size={18} />
           <input
             type="email"
+            value={email}
+            suppressHydrationWarning={true}
             placeholder="Enter your email"
             onChange={(e) => setEmail(e.target.value)}
             className="w-full pl-10 pr-3 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-slate-300 
@@ -65,6 +67,8 @@ export default function LoginPage() {
           <Lock className="absolute left-3 top-3.5 text-slate-300" size={18} />
           <input
             type="password"
+            value={password}
+            suppressHydrationWarning={true}
             placeholder="Enter your password"
             onChange={(e) => setPassword(e.target.value)}
             className="w-full pl-10 pr-3 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-slate-300 
@@ -73,8 +77,9 @@ export default function LoginPage() {
         </div>
 
         {/* Login Button */}
-        <button
+        <button type="button"
           onClick={handleLogin}
+          suppressHydrationWarning={true}
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 
                      text-white font-semibold py-3 mt-2 rounded-lg shadow-lg transition-all"
         >
