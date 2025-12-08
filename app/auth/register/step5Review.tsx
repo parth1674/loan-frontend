@@ -1,16 +1,19 @@
 "use client";
 
+interface StepProps {
+  form: any;
+  update?: (key: string, value: any) => void;
+  next?: () => void;
+  back?: () => void;
+  finalSubmit?: () => void;
+}
+
 export default function Step5Review({
   form,
   next,
   back,
   finalSubmit,
-}: {
-  form: any;
-  next: () => void;
-  back: () => void;
-  finalSubmit: () => void;
-}) {
+}: StepProps) {
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-6">Review Your Details</h2>

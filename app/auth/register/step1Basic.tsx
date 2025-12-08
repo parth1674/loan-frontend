@@ -4,15 +4,17 @@ import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
+interface StepProps {
+  form: any;
+  update: (key: string, value: any) => void;
+  next: () => void;
+}
+
 export default function Step1Basic({
   form,
   update,
   next,
-}: {
-  form: any;
-  update: (key: string, value: any) => void;
-  next: () => void;
-}) {
+}: StepProps) {
   // Country-wise mobile length
   const COUNTRY_DIGITS: Record<string, number> = {
     IN: 10,

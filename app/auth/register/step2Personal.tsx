@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 
+interface StepProps {
+  form: any;
+  update: (key: string, value: any) => void;
+  next: () => void;
+  prev: () => void;
+}
+
 export default function Step2Personal({
   form,
   update,
   next,
   prev,
-}: {
-  form: any;
-  update: (key: string, value: any) => void;
-  next: () => void;
-  prev: () => void;
-}) {
+}: StepProps) {
   const [sameAddress, setSameAddress] = useState(false);
 
   // ---------- VALIDATIONS ----------

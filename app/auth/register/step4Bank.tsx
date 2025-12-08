@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 
+interface StepProps {
+  form: any;
+  update: (key: string, value: any) => void;
+  next: () => void;
+  back: () => void;
+}
+
 export default function Step4Bank({
   form,
   update,
   next,
   back,
-}: {
-  form: any;
-  update: (key: string, value: any) => void;
-  next: () => void;
-  back: () => void;
-}) {
+}: StepProps) {
+
   const [ifscLoading, setIfscLoading] = useState(false);
   const [nameError, setNameError] = useState("");
 
@@ -108,7 +111,7 @@ export default function Step4Bank({
 
     const preview = URL.createObjectURL(file);
     update("chequeUrl", preview);
-    update("chequeFile", file);
+    update("cheque", file);
   }
 
   return (
