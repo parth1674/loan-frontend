@@ -90,7 +90,7 @@ export default function Step3KYC({
       <h2 className="text-xl font-semibold mb-4">KYC Verification</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+
         {/* Aadhaar Number */}
         <div>
           <label className="block text-sm mb-1">Aadhaar Number *</label>
@@ -101,7 +101,15 @@ export default function Step3KYC({
             suppressHydrationWarning={true}
             onChange={(e) => update("aadhaarNumber", e.target.value.replace(/\D/g, ""))}
             className="w-full border rounded px-3 py-2"
+            placeholder="Enter 12-digit Aadhaar number"
           />
+
+          {/* 🔥 Real-time error message */}
+          {form.aadhaarNumber.length > 0 && !validateAadhaar(form.aadhaarNumber) && (
+            <p className="text-red-500 text-xs mt-1">
+              Aadhaar must be exactly 12 digits.
+            </p>
+          )}
         </div>
 
         {/* PAN Number */}
@@ -116,7 +124,15 @@ export default function Step3KYC({
               update("panNumber", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))
             }
             className="w-full border rounded px-3 py-2"
+            placeholder="Enter 10-character PAN"
           />
+
+          {/* 🔥 Real-time error message */}
+          {form.panNumber.length > 0 && !validatePAN(form.panNumber) && (
+            <p className="text-red-500 text-xs mt-1">
+              PAN must follow ABCDE1234F format.
+            </p>
+          )}
         </div>
 
         {/* Aadhaar Upload */}
@@ -143,6 +159,8 @@ export default function Step3KYC({
             onChange={(e) => handleFileUpload(e, "panUrl")}
             className="w-full border rounded px-3 py-2"
           />
+
+
 
           {form.panUrl && (
             <img src={form.panUrl} className="mt-2 h-32 border rounded object-cover" />
