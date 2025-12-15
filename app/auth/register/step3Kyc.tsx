@@ -70,7 +70,9 @@ export default function Step3KYC({
   }
 
   function validate() {
-    if (!validateAadhaar(form.aadhaarNumber)) {
+    const cleanAadhaar = form.aadhaarNumber.replace(/\s/g, "");
+
+    if (!validateAadhaar(cleanAadhaar)) {
       return alert("Invalid Aadhaar. Must be 12 digits.");
     }
 
@@ -85,6 +87,7 @@ export default function Step3KYC({
     next();
   }
 
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">KYC Verification</h2>
@@ -92,48 +95,115 @@ export default function Step3KYC({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* Aadhaar Number */}
+        {/* AADHAAR NUMBER */}
         <div>
-          <label className="block text-sm mb-1">Aadhaar Number *</label>
-          <input
-            type="text"
-            maxLength={12}
-            value={form.aadhaarNumber}
-            suppressHydrationWarning={true}
-            onChange={(e) => update("aadhaarNumber", e.target.value.replace(/\D/g, ""))}
-            className="w-full border rounded px-3 py-2"
-            placeholder="Enter 12-digit Aadhaar number"
-          />
+          <label className="block text-sm font-medium mb-1 flex items-center gap-1">
+            Aadhaar Number *
+            <span className="text-gray-400 text-[11px]">(12 digits)</span>
+          </label>
 
-          {/* 🔥 Real-time error message */}
-          {form.aadhaarNumber.length > 0 && !validateAadhaar(form.aadhaarNumber) && (
-            <p className="text-red-500 text-xs mt-1">
-              Aadhaar must be exactly 12 digits.
+          <div className="relative">
+            <input
+              type="text"
+              maxLength={14} // because of spaces
+              value={form.aadhaarNumber}
+              suppressHydrationWarning={true}
+              onChange={(e) => {
+                let v = e.target.value.replace(/\D/g, "");
+                if (v.length > 12) v = v.slice(0, 12);
+                const formatted = v.replace(/(\d{4})(?=\d)/g, "$1 ");
+                update("aadhaarNumber", formatted);
+              }}
+              className={`w-full border rounded px-3 py-2 pr-10 transition 
+        focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+        ${form.aadhaarNumber.replace(/\s/g, "").length === 12 &&
+                  validateAadhaar(form.aadhaarNumber.replace(/\s/g, ""))
+                  ? "border-green-500"
+                  : ""
+                }
+      `}
+              placeholder="1234 5678 9012"
+            />
+
+            {/* ✔ GREEN CHECK */}
+            {form.aadhaarNumber.replace(/\s/g, "").length === 12 &&
+              validateAadhaar(form.aadhaarNumber.replace(/\s/g, "")) && (
+                <span className="absolute right-3 top-2.5 text-green-600 font-bold text-lg">
+                  ✓
+                </span>
+              )}
+          </div>
+
+          {/* ❌ ERROR TEXT */}
+          {form.aadhaarNumber.length > 0 &&
+            !validateAadhaar(form.aadhaarNumber.replace(/\s/g, "")) && (
+              <p className="text-red-500 text-xs mt-1 animate-pulse">
+                Aadhaar must be exactly 12 digits.
+              </p>
+            )}
+
+          {/* 👁 Masked Preview */}
+          {validateAadhaar(form.aadhaarNumber.replace(/\s/g, "")) && (
+            <p className="text-green-600 text-xs mt-1">
+              Preview: xxxx-xxxx-{form.aadhaarNumber.replace(/\s/g, "").slice(8)}
             </p>
           )}
         </div>
+
+
 
         {/* PAN Number */}
+        {/* PAN NUMBER */}
         <div>
-          <label className="block text-sm mb-1">PAN Number *</label>
-          <input
-            type="text"
-            maxLength={10}
-            value={form.panNumber}
-            suppressHydrationWarning={true}
-            onChange={(e) =>
-              update("panNumber", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))
-            }
-            className="w-full border rounded px-3 py-2"
-            placeholder="Enter 10-character PAN"
-          />
+          <label className="block text-sm font-medium mb-1 flex items-center gap-1">
+            PAN Number *
+            <span className="text-gray-400 text-[11px]">(ABCDE1234F)</span>
+          </label>
 
-          {/* 🔥 Real-time error message */}
-          {form.panNumber.length > 0 && !validatePAN(form.panNumber) && (
-            <p className="text-red-500 text-xs mt-1">
-              PAN must follow ABCDE1234F format.
-            </p>
-          )}
+          <div className="relative group">
+            <input
+              type="text"
+              maxLength={10}
+              value={form.panNumber}
+              suppressHydrationWarning={true}
+              onChange={(e) => {
+                const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                update("panNumber", v);
+              }}
+              className={`w-full border rounded px-3 py-2 pr-10 transition
+        focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+        ${validatePAN(form.panNumber) && form.panNumber.length === 10
+                  ? "border-green-500"
+                  : ""
+                }
+      `}
+              placeholder="ABCDE1234F"
+            />
+
+            {/* ✔ GREEN CHECK */}
+            {form.panNumber.length === 10 && validatePAN(form.panNumber) && (
+              <span className="absolute right-3 top-2.5 text-green-600 font-bold text-lg">
+                ✓
+              </span>
+            )}
+
+            {/* Tooltip */}
+            <div className="absolute -top-8 right-0 hidden group-hover:block 
+      bg-black text-white text-[10px] px-2 py-1 rounded shadow">
+              Format: 5 letters + 4 digits + 1 letter
+            </div>
+          </div>
+
+          {/* ❌ ERROR */}
+          {form.panNumber.length > 0 &&
+            !validatePAN(form.panNumber) && (
+              <p className="text-red-500 text-xs mt-1 animate-pulse">
+                PAN must follow ABCDE1234F format.
+              </p>
+            )}
         </div>
+
+
 
         {/* Aadhaar Upload */}
         <div>

@@ -29,3 +29,15 @@ export const payLoan = (loanId: string, amount: number, type: string = "EMI") =>
       },
     }
   );
+
+
+export const updateUserProfile = (userId: string, data: any) =>
+  API.patch(
+    `/auth/user/${userId}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
