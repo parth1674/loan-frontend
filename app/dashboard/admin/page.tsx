@@ -13,6 +13,7 @@ export default function AdminDashboard() {
 
   async function fetchSummary() {
     const res = await getAdminSummary();
+    console.log("ADMIN SUMMARY:", res.data);
     setSummary(res.data);
   }
 
@@ -54,6 +55,13 @@ export default function AdminDashboard() {
       });
   }, [users, search, filterStatus]);
 
+  // ======================
+  // CALCULATED UI VALUES
+  // ======================
+  const totalOutstanding = summary?.totalOutstanding || 0;
+  const totalPrincipal = summary?.totalPrincipal || 0;
+  const totalInterest = Math.max(totalOutstanding - totalPrincipal, 0);
+
   return (
     <div className="space-y-6">
 
@@ -72,9 +80,32 @@ export default function AdminDashboard() {
           <SummaryCard title="Total Loans" value={summary.totalLoans} icon="📄" />
           <SummaryCard title="Active Loans" value={summary.activeLoans} icon="📌" />
           <SummaryCard title="Overdue Loans" value={summary.overdueLoans} icon="⚠️" />
-          <SummaryCard wide title="Total Outstanding" value={`₹ ${summary.totalOutstanding}`} icon="💰" />
+          {/* 🔹 PRINCIPAL */}
+          <SummaryCard
+            wide
+            title="Total Principal (Without Interest)"
+            value={`₹ ${summary.totalPrincipal}`}
+            icon="🏦"
+          />
+
+          {/* 🔹 OUTSTANDING */}
+          <SummaryCard
+            wide
+            title="Total Outstanding (With Interest)"
+            value={`₹ ${summary.totalOutstanding}`}
+            icon="💰"
+          />
+
+          {/* 🔹 INTEREST */}
+          <SummaryCard
+            wide
+            title="Total Interest Earned"
+            value={`₹ ${summary.totalInterest}`}
+            icon="📈"
+          />
         </div>
       )}
+
 
       {/* USERS SECTION */}
       <div className="bg-white rounded-xl shadow-lg border">
