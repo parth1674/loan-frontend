@@ -2,11 +2,17 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { getMyLoans, payLoan } from "@/api/client";
+import Link from "next/link";
 
 type Loan = {
   id: string;
   principal: number;
   outstanding: number;
+  annualRate?: number;
+  dailyInterest?: number;
+  interestAccrued?: number;
+  interestPending?: number;
+  lastInterestCalculatedAt?: string | null;
   status: "ACTIVE" | "CLOSED" | "OVERDUE" | string;
   nextPaymentDate?: string | null;
   createdAt?: string;
@@ -109,6 +115,15 @@ export default function ClientLoansPage() {
     [loans]
   );
 
+  const totalInterestPending = useMemo(
+    () =>
+      loans.reduce(
+        (sum, loan) => sum + Number(loan.interestPending ?? loan.interestAccrued ?? 0),
+        0
+      ),
+    [loans]
+  );
+
   // =================== UI START ===================
   return (
     <div className="space-y-6">
@@ -150,6 +165,12 @@ export default function ClientLoansPage() {
               <p className="text-gray-400 text-xs">Closed Loans</p>
               <p className="font-semibold">
                 {loans.filter((l) => l.status === "CLOSED").length}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-xs">Interest Pending</p>
+              <p className="font-semibold">
+                INR {totalInterestPending.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
               </p>
             </div>
           </div>
@@ -208,6 +229,16 @@ function LoanRow({
           Principal: ₹ {loan.principal} • Outstanding: ₹ {loan.outstanding}
         </p>
         <p className="text-[11px] text-gray-400 mt-1">
+          Interest: INR {Number(loan.interestPending ?? loan.interestAccrued ?? 0).toLocaleString("en-IN", {
+            maximumFractionDigits: 2,
+          })}
+          {loan.dailyInterest !== undefined
+            ? ` | Daily: INR ${Number(loan.dailyInterest).toLocaleString("en-IN", {
+                maximumFractionDigits: 2,
+              })}`
+            : ""}
+        </p>
+        <p className="text-[11px] text-gray-400 mt-1">
           Next Payment:{" "}
           {loan.nextPaymentDate
             ? new Date(loan.nextPaymentDate).toDateString()
@@ -216,13 +247,21 @@ function LoanRow({
       </div>
 
       <div className="flex items-center gap-3 justify-between md:justify-end">
+
         <span
-          className={`px-3 py-1 rounded-full text-[11px] font-semibold ${
-            statusColor[loan.status] || "bg-gray-100 text-gray-700"
-          }`}
+          className={`px-3 py-1 rounded-full text-[11px] font-semibold ${statusColor[loan.status] || "bg-gray-100 text-gray-700"
+            }`}
         >
           {loan.status}
         </span>
+
+        {/* 🔥 NEW: View Schedule Button */}
+        <Link
+          href={`/dashboard/client/loans/${loan.id}`}
+          className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-xs hover:bg-gray-200"
+        >
+          View Schedule
+        </Link>
 
         {loan.status === "ACTIVE" && (
           <button
@@ -232,6 +271,7 @@ function LoanRow({
             Pay Now
           </button>
         )}
+
       </div>
     </div>
   );

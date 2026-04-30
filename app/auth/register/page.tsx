@@ -58,7 +58,7 @@ export default function RegisterPage() {
       });
 
       const res = await fetch(
-        "https://finance-app-i0ff.onrender.com/auth/register-complete",
+        "http://localhost:3000/auth/register-complete",
         {
           method: "POST",
           body: fd,

@@ -32,7 +32,7 @@ export default function Home() {
     setSubMsg("");
 
     try {
-      const res = await fetch("https://finance-app-i0ff.onrender.com/newsletter/subscribe", {
+      const res = await fetch("http://localhost:3000/newsletter/subscribe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

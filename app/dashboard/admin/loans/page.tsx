@@ -100,6 +100,7 @@ export default function AdminLoansPage() {
                 <th className="p-2">User</th>
                 <th className="p-2">Principal</th>
                 <th className="p-2">Outstanding</th>
+                <th className="p-2">Interest</th>
                 <th className="p-2">Status</th>
                 <th className="p-2">Next Payment</th>
                 <th className="p-2 text-right">Created</th>
@@ -124,6 +125,21 @@ export default function AdminLoansPage() {
                   </td>
 
                   <td className="p-2">
+                    <div className="font-semibold text-emerald-700">
+                      INR {Number(loan.interestPending ?? loan.interestAccrued ?? 0).toLocaleString("en-IN", {
+                        maximumFractionDigits: 2,
+                      })}
+                    </div>
+                    {loan.dailyInterest !== undefined && (
+                      <div className="text-xs text-gray-500">
+                        Daily INR {Number(loan.dailyInterest).toLocaleString("en-IN", {
+                          maximumFractionDigits: 2,
+                        })}
+                      </div>
+                    )}
+                  </td>
+
+                  <td className="p-2">
                     <StatusBadge status={loan.status} />
                   </td>
 
@@ -142,7 +158,7 @@ export default function AdminLoansPage() {
               {filteredLoans.length === 0 && (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="p-4 text-center text-gray-500"
                   >
                     No loans found.

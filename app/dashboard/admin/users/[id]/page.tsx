@@ -219,5 +219,5 @@ function buildFileUrl(path?: string | null): string | null {
   }
 
   // 🔴 Yahan correct backend port use karo (NestJS = 3000)
-  return `https://finance-app-i0ff.onrender.com/uploads/${val}`;
+  return `http://localhost:3000/uploads/${val}`;
 }

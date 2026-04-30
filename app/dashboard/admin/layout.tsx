@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, Users, BadgeDollarSign, Mail, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, BadgeDollarSign, Mail, LogOut, PercentDiamond } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -50,6 +50,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <SidebarLink href="/dashboard/admin/users" icon={<Users size={18} />}>Users</SidebarLink>
           <SidebarLink href="/dashboard/admin/loans" icon={<BadgeDollarSign size={18} />}>Loans</SidebarLink>
           <SidebarLink href="/dashboard/admin/newsletter" icon={<Mail size={18} />}>Newsletter</SidebarLink>
+          <SidebarLink href="/dashboard/admin/loan-requests" icon={<PercentDiamond size={18} />}>Loan Requests</SidebarLink>
+
         </nav>
 
         {/* PROFILE + LOGOUT → ALWAYS BOTTOM */}

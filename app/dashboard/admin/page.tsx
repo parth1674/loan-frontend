@@ -2,6 +2,13 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { getAllUsers, approveUser, getAdminSummary } from "@/api/admin";
+import LoanStatusChart from "../../../components/LoanStatusChart";
+import {
+  getAllLoanRequests,
+  approveLoanRequest,
+  rejectLoanRequest,
+} from "@/api/loanRequestAdmin";
+
 
 export default function AdminDashboard() {
   const [summary, setSummary] = useState<any>(null);
@@ -10,6 +17,9 @@ export default function AdminDashboard() {
   const [approving, setApproving] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
+  const [loanRequests, setLoanRequests] = useState<any[]>([]);
+  const [loadingLoans, setLoadingLoans] = useState(false);
+
 
   async function fetchSummary() {
     const res = await getAdminSummary();
@@ -44,6 +54,7 @@ export default function AdminDashboard() {
 
     fetchSummary();
     fetchUsers();
+    loadLoanRequests();
   }, []);
 
   const filteredUsers = useMemo(() => {
@@ -54,6 +65,19 @@ export default function AdminDashboard() {
         return u.fullname.toLowerCase().includes(s) || u.email.toLowerCase().includes(s);
       });
   }, [users, search, filterStatus]);
+
+  async function loadLoanRequests() {
+    setLoadingLoans(true);
+    try {
+      const res = await getAllLoanRequests();
+      setLoanRequests(res.data || []);
+    } catch (e) {
+      console.log("ADMIN LOAN REQUEST ERROR", e);
+    } finally {
+      setLoadingLoans(false);
+    }
+  }
+
 
   // ======================
   // CALCULATED UI VALUES
@@ -68,43 +92,239 @@ export default function AdminDashboard() {
       {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+
         <p className="text-sm text-gray-500">Overview of users & loan performance</p>
       </div>
 
       {/* SUMMARY CARDS */}
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
-          <SummaryCard title="Total Users" value={summary.totalUsers} icon="👥" />
-          <SummaryCard title="Pending Users" value={summary.pendingUsers} icon="⏳" />
-          <SummaryCard title="Active Users" value={summary.activeUsers} icon="✅" />
-          <SummaryCard title="Total Loans" value={summary.totalLoans} icon="📄" />
-          <SummaryCard title="Active Loans" value={summary.activeLoans} icon="📌" />
-          <SummaryCard title="Overdue Loans" value={summary.overdueLoans} icon="⚠️" />
-          {/* 🔹 PRINCIPAL */}
+          <SummaryCard title="Total Users" value={summary.totalUsers} icon="👥" color="blue" />
+          <SummaryCard title="Pending Users" value={summary.pendingUsers} icon="⏳" color="yellow" />
+          <SummaryCard title="Active Users" value={summary.activeUsers} icon="✅" color="green" />
+          <SummaryCard title="Total Loans" value={summary.totalLoans} icon="📄" color="blue" />
+
+          <SummaryCard title="Active Loans" value={summary.activeLoans} icon="📌" color="green" />
+          <SummaryCard title="Overdue Loans" value={summary.overdueLoans} icon="⚠️" color="red" />
+
           <SummaryCard
             wide
             title="Total Principal (Without Interest)"
-            value={`₹ ${summary.totalPrincipal}`}
+            value={`₹ ${summary.totalPrincipal.toLocaleString("en-IN")}`}
             icon="🏦"
+            color="blue"
           />
 
-          {/* 🔹 OUTSTANDING */}
           <SummaryCard
             wide
             title="Total Outstanding (With Interest)"
-            value={`₹ ${summary.totalOutstanding}`}
+            value={`₹ ${summary.totalOutstanding.toLocaleString("en-IN")}`}
             icon="💰"
+            color="orange"
           />
 
-          {/* 🔹 INTEREST */}
           <SummaryCard
             wide
             title="Total Interest Earned"
-            value={`₹ ${summary.totalInterest}`}
+            value={`₹ ${summary.totalInterest.toLocaleString("en-IN")}`}
             icon="📈"
+            color="green"
+          />
+
+          {/* 🔥 NEW ENHANCED CARDS */}
+          <SummaryCard
+            title="Running Loans"
+            value={summary.runningLoans}
+            icon="🔄"
+            color="indigo"
+          />
+
+          <SummaryCard
+            title="Recovered Amount"
+            value={`₹ ${summary.recoveredAmount.toLocaleString("en-IN")}`}
+            icon="💵"
+            color="green"
+          />
+
+          <SummaryCard
+            title="Interest Pending"
+            value={`₹ ${summary.interestPending.toFixed(2)}`}
+            icon="🔥"
+            color="red"
+          />
+
+          <SummaryCard
+            title="Daily Interest"
+            value={`INR ${Number(summary.totalDailyInterest ?? summary.dailyInterestAccrued ?? 0).toLocaleString("en-IN", {
+              maximumFractionDigits: 2,
+            })}`}
+            icon="%"
+            color="green"
+          />
+
+          <SummaryCard
+            title="Avg Interest Rate"
+            value={`${summary.avgInterestRate.toFixed(2)}%`}
+            icon="📊"
+            color="purple"
+          />
+
+          {/* 🔥 FINANCIAL ANALYTICS */}
+
+          <SummaryCard
+            wide
+            title="Net Profit"
+            value={`₹ ${summary.netProfit?.toLocaleString("en-IN") || 0}`}
+            icon="💹"
+            color="green"
+          />
+
+          <SummaryCard
+            title="Portfolio Risk %"
+            value={`${summary.riskPercentage?.toFixed(2) || 0}%`}
+            icon="⚠️"
+            color="red"
+          />
+
+          <SummaryCard
+            title="Recovery Efficiency %"
+            value={`${summary.recoveryPercentage?.toFixed(2) || 0}%`}
+            icon="🎯"
+            color="blue"
+          />
+
+          <SummaryCard
+            title="NPA Accounts"
+            value={summary.npaCount}
+            icon="🚨"
+            color="red"
+          />
+
+          <SummaryCard
+            title="NPA Outstanding"
+            value={`₹ ${summary.totalNPAOutstanding?.toLocaleString("en-IN")}`}
+            icon="💀"
+            color="red"
+          />
+
+          <SummaryCard
+            title="Substandard NPAs"
+            value={`${summary.substandard} (₹ ${summary.substandardAmt.toLocaleString("en-IN")})`}
+            icon="🟡"
+            color="yellow"
+          />
+
+          <SummaryCard
+            title="Doubtful NPAs"
+            value={`${summary.doubtful} (₹ ${summary.doubtfulAmt.toLocaleString("en-IN")})`}
+            icon="🟠"
+            color="orange"
+          />
+
+          <SummaryCard
+            title="Loss Assets"
+            value={`${summary.loss} (₹ ${summary.lossAmt.toLocaleString("en-IN")})`}
+            icon="🔴"
+            color="red"
+          />
+
+          <SummaryCard
+            wide
+            title="Provision Required"
+            value={`₹ ${summary.totalProvision.toLocaleString("en-IN")}`}
+            icon="🏦"
+            color="purple"
           />
         </div>
       )}
+
+      {/* ================= LOAN REQUESTS ================= */}
+      <div className="bg-white rounded-xl shadow border mt-6">
+        <div className="px-5 py-4 border-b">
+          <h2 className="text-xl font-semibold">Loan Requests</h2>
+          <p className="text-xs text-gray-500">
+            Review and approve/reject loan requests
+          </p>
+        </div>
+
+        <div className="p-5">
+          {loadingLoans ? (
+            <p className="text-sm text-gray-500">Loading...</p>
+          ) : loanRequests.length === 0 ? (
+            <p className="text-sm text-gray-500">No loan requests found</p>
+          ) : (
+            <div className="space-y-4">
+              {loanRequests.map((r) => (
+                <div
+                  key={r.id}
+                  className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                >
+                  <div>
+                    <p className="font-semibold text-sm">
+                      {r.user?.fullname} ({r.user?.email})
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      ₹ {r.requestedAmount} • {r.termDays} days • {r.requestedRate}%
+                    </p>
+                    {r.purpose && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Purpose: {r.purpose}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${r.status === "PENDING"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : r.status === "APPROVED"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {r.status}
+                    </span>
+
+                    {r.status === "PENDING" && (
+                      <>
+                        <button
+                          onClick={async () => {
+                            await approveLoanRequest(r.id);
+                            loadLoanRequests();
+                            fetchSummary();
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs"
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            await rejectLoanRequest(r.id);
+                            loadLoanRequests();
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+
+      {/* CHARTS SECTION */}
+      {summary && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <LoanStatusChart summary={summary} />
+        </div>
+      )}
+
 
 
       {/* USERS SECTION */}
@@ -195,7 +415,18 @@ export default function AdminDashboard() {
   );
 }
 
-function SummaryCard({ title, value, icon, wide }: any) {
+function SummaryCard({ title, value, icon, wide, color = "gray" }: any) {
+  const colorMap: any = {
+    green: "text-green-600 bg-green-100",
+    red: "text-red-600 bg-red-100",
+    yellow: "text-yellow-600 bg-yellow-100",
+    blue: "text-blue-600 bg-blue-100",
+    orange: "text-orange-600 bg-orange-100",
+    indigo: "text-indigo-600 bg-indigo-100",
+    purple: "text-purple-600 bg-purple-100",
+    gray: "text-gray-600 bg-gray-100",
+  };
+
   return (
     <div
       className={`bg-gradient-to-br from-white to-gray-50 shadow-md px-5 py-4 rounded-xl border 
@@ -206,11 +437,19 @@ function SummaryCard({ title, value, icon, wide }: any) {
           <p className="text-gray-500 text-xs">{title}</p>
           <h3 className="text-2xl font-bold mt-1 text-gray-800">{value}</h3>
         </div>
-        <div className="text-3xl">{icon}</div>
+
+        {icon && (
+          <div
+            className={`text-3xl p-2 rounded-lg ${colorMap[color]}`}
+          >
+            {icon}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
 
 function StatusBadge({ status }: any) {
   if (status === "PENDING")
