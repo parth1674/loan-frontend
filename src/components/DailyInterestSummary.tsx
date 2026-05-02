@@ -67,7 +67,7 @@ export default function DailyInterestSummary({
         <div>
           <h2 className="text-lg font-semibold">Daily Interest</h2>
           <p className="text-xs text-gray-500">
-            Auto-calculated by the backend scheduler from the day after loan start.
+            Interest is posted by the backend scheduler from the day after loan start.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function DailyInterestSummary({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <InterestMetric
           icon={<TrendingUp className="h-4 w-4" />}
-          label="Today accrued"
+          label="Daily estimate"
           value={formatMoney(totalDailyInterest)}
         />
         <InterestMetric
