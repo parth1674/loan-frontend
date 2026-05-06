@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "@/api/axios"; // jo pehle se kaam kar raha hai, wahi rehne do
+import { buildUploadUrl } from "@/api/config";
 
 export default function AdminUserDetailsPage() {
   const { id } = useParams();
@@ -88,7 +89,7 @@ export default function AdminUserDetailsPage() {
             <p className="font-medium mb-1">Aadhaar Card</p>
             {aadhaarSrc ? (
               <img
-                src={user.aadhaarUrl}
+                src={aadhaarSrc}
                 alt="Aadhaar Card"
                 width={400}
                 height={250}
@@ -104,7 +105,7 @@ export default function AdminUserDetailsPage() {
             <p className="font-medium mb-1">PAN Card</p>
             {panSrc ? (
               <img
-                src={user.panUrl}
+                src={panSrc}
                 alt="PAN Card"
                 width={400}
                 height={250}
@@ -120,7 +121,7 @@ export default function AdminUserDetailsPage() {
             <p className="font-medium mb-1">Passport Size Photo</p>
             {photoSrc ? (
               <img
-                src={user.photoUrl}
+                src={photoSrc}
                 alt="Passport Size Photo"
                 width={400}
                 height={250}
@@ -151,7 +152,7 @@ export default function AdminUserDetailsPage() {
           <p className="font-medium mb-1">Cancelled Cheque / Passbook</p>
           {chequeSrc ? (
             <img
-              src={user.chequeUrl}
+              src={chequeSrc}
               alt="Cancelled Cheque / Passbook"
               width={400}
               height={250}
@@ -204,8 +205,7 @@ function Field({ label, value }: { label: string; value: any }) {
 }
 
 /**
- * Helper: backend ne agar sirf filename store kiya hai
- *   - "abc.jpg" → http://localhost:3000/uploads/abc.jpg
+ * Helper: backend ne agar sirf filename store kiya hai to configured uploads URL use hoga.
  * Agar full URL store hai (http / https / blob:), to direct wahi use karenge.
  */
 function buildFileUrl(path?: string | null): string | null {
@@ -218,6 +218,5 @@ function buildFileUrl(path?: string | null): string | null {
     return val;
   }
 
-  // 🔴 Yahan correct backend port use karo (NestJS = 3000)
-  return `http://localhost:3000/uploads/${val}`;
+  return buildUploadUrl(val);
 }

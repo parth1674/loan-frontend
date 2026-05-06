@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
 
   output: "standalone",  // ⭐ REQUIRED for Render Next.js
 
+  turbopack: {
+    root: process.cwd(),
+  },
+
   images: {
     remotePatterns: [
       {

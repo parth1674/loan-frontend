@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { buildApiUrl } from "@/api/config";
 import { getLoanInterestHistory, type InterestHistoryPoint } from "@/api/interest";
 import {
     CartesianGrid,
@@ -33,7 +34,7 @@ export default function LoanSchedulePage() {
             const token = localStorage.getItem("token");
 
             const res = await fetch(
-                `http://localhost:3000/loan/${id}/schedule`,
+                buildApiUrl(`/loan/${id}/schedule`),
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

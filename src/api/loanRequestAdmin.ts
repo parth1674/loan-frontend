@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API = "http://localhost:3000"; // abhi hardcoded, baad me env
+import { buildApiUrl } from "./config";
 
 function authHeader() {
   const token = localStorage.getItem("token");
@@ -10,14 +9,14 @@ function authHeader() {
 }
 
 export function getAllLoanRequests() {
-  return axios.get(`${API}/loan-request/admin`, {
+  return axios.get(buildApiUrl("/loan-request/admin"), {
     headers: authHeader(),
   });
 }
 
 export function approveLoanRequest(id: string, adminNote?: string) {
   return axios.post(
-    `${API}/loan-request/${id}/approve`,
+    buildApiUrl(`/loan-request/${id}/approve`),
     { adminNote },
     { headers: authHeader() }
   );
@@ -25,7 +24,7 @@ export function approveLoanRequest(id: string, adminNote?: string) {
 
 export function rejectLoanRequest(id: string, adminNote?: string) {
   return axios.post(
-    `${API}/loan-request/${id}/reject`,
+    buildApiUrl(`/loan-request/${id}/reject`),
     { adminNote },
     { headers: authHeader() }
   );

@@ -7,6 +7,7 @@ import Step2Personal from "./step2Personal";
 import Step3Kyc from "./step3Kyc";
 import Step4Bank from "./step4Bank";
 import Step5Review from "./step5Review";
+import { buildApiUrl } from "@/api/config";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -58,7 +59,7 @@ export default function RegisterPage() {
       });
 
       const res = await fetch(
-        "http://localhost:3000/auth/register-complete",
+        buildApiUrl("/auth/register-complete"),
         {
           method: "POST",
           body: fd,

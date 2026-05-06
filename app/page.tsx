@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { buildApiUrl } from "@/api/config";
 
 export default function Home() {
   const [amount, setAmount] = useState(50000);
@@ -32,7 +33,7 @@ export default function Home() {
     setSubMsg("");
 
     try {
-      const res = await fetch("http://localhost:3000/newsletter/subscribe", {
+      const res = await fetch(buildApiUrl("/newsletter/subscribe"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
