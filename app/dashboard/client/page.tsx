@@ -57,7 +57,7 @@ export default function ClientDashboard() {
       }
 
       const user = JSON.parse(raw);
-      const res = await getClientDashboard(user.id);
+      const res = await getClientDashboard();
       setData(res.data);
 
       try {

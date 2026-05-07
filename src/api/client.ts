@@ -1,7 +1,7 @@
 import API from "./axios";
 
-export const getClientDashboard = (userId: string) =>
-  API.get(`/loan/dashboard/${userId}`, {
+export const getClientDashboard = () =>
+  API.get("/client/dashboard", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
