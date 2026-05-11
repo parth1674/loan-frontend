@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { buildApiUrl } from "@/api/config";
+import { buildApiUrl } from "../src/api/config";
 
 export default function Home() {
   const [amount, setAmount] = useState(50000);
